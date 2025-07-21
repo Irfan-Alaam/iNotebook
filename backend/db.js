@@ -1,10 +1,18 @@
+// backend/db.js
 const mongoose = require('mongoose');
 
-// Replace with your MongoDB connection string
-const mongoURI = "mongodb://127.0.0.1:27017/react_mern"
+const mongoURI = process.env.MONGO_URI;
+console.log("Mongo URI:", mongoURI); // Debug check
 
 async function connectToMongo() {
-    await mongoose.connect(mongoURI).then(()=> console.log("Connected to Mongo Successfully")).catch(err => console.log(err));
+  try {
+    await mongoose.connect(mongoURI);
+    console.log("✅ Connected to MongoDB successfully");
+  } catch (err) {
+    console.error("❌ Failed to connect to MongoDB:", err);
+    process.exit(1); // Exit on error
   }
-  
-  module.exports = connectToMongo;
+}
+
+// Remove auto-execution here! Just export the function.
+module.exports = connectToMongo;
