@@ -16,6 +16,17 @@ export default function AddNote(props) {
   const onChange = (e) => {
     setNote({ ...note, [e.target.name]: e.target.value });
   };
+  const handleSubmit = async () => {
+  const result = await addNote(title, description, tag);
+  if (!result.success) {
+    alert(result.error); // Show user-friendly error
+    return;
+  }
+  // Success handling
+  setTitle("");
+  setDescription("");
+  setTag("");
+};
   return (
     <>
       <div>

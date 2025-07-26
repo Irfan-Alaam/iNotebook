@@ -24,20 +24,37 @@ const NoteState = (props) => {
   };
   //ADD note
   const addNote = async (title, description, tag) => {
+  try {
+    // Validate inputs first
+    if (!title || title.length < 3) throw new Error("Title too short (min 3 chars)");
+    if (!description || description.length < 5) throw new Error("Description too short (min 5 chars)");
+
     const response = await fetch(`${API_URL}/api/notes/addnotes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          localStorage.getItem('token')},
-      body: JSON.stringify({ title, description, tag }),
+        "auth-token": localStorage.getItem('token')
+      },
+      body: JSON.stringify({ 
+        title: title.trim(), 
+        description: description.trim(), 
+        tag: tag?.trim() || "General" 
+      }),
     });
-    // console.log("Adding new note");
-    //todo API call
-    const note = await response.json()
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.errors?.[0]?.msg || "Failed to add note");
+    }
+
+    const note = await response.json();
     setNotes(notes.concat(note));
-   
-  };
+    return { success: true };
+  } catch (error) {
+    console.error("Add Note Error:", error.message);
+    return { success: false, error: error.message };
+  }
+};
   const deleteNote = async (id) => {
     console.log("deleting note with id " + id);
     const response = await fetch(`${API_URL}/api/notes/deletenote/${id}`, {
